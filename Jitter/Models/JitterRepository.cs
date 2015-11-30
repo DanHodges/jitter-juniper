@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace Jitter.Models
@@ -62,6 +63,25 @@ namespace Jitter.Models
             List<JitterUser> found_users = query.Where(user => user.Handle.Contains(handle)).ToList();
             found_users.Sort();
             return found_users;
+        }
+
+        public List<JitterUser> SearchByName(string search_term)
+        {
+            // SQL : select * from JitterUsers AS users where users.FirstName 
+            //like %search_term OR users.LastName like '%search_term'
+            var query = from user in _context.JitterUsers select user;
+            List<JitterUser> found_users = query.Where(user => Regex.IsMatch(user.FirstName, search_term, RegexOptions.IgnoreCase) || Regex.IsMatch(user.LastName, search_term, RegexOptions.IgnoreCase)).ToList();
+            found_users.Sort();
+            return found_users;
+        }
+
+        public List<Jot> GetAllJots()
+        {
+            //SQL select * from Jots
+            var query = from jot in _context.Jots select jot;
+            List<Jot> found_jots = query.ToList();
+            //found_jots.Sort();
+            return found_jots;
         }
     }
 }

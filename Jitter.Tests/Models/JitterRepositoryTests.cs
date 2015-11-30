@@ -234,5 +234,76 @@ namespace Jitter.Tests.Models
             Assert.AreEqual(expected_users[1].Handle, actual_users[1].Handle);
         }
 
+        [TestMethod]
+        public void JitterRepositoryEnsureICanSearchByName()
+        {
+            // Arrange
+            var expected = new List<JitterUser>
+            {
+                new JitterUser { Handle = "adam1", FirstName = "Adam", LastName = "Sandler" },
+                new JitterUser { Handle = "rumbadancer2",FirstName = "Sandy", LastName = "Mathis"  },
+                new JitterUser { Handle = "treehugger", FirstName = "Popeye", LastName = "The Sailor Man"  },
+                new JitterUser { Handle = "treedancer", FirstName = "Richard", LastName = "Sandlehook" }
+
+            };
+            mock_set.Object.AddRange(expected);
+
+            ConnectMocksToDataStore(expected);
+            // Act
+            string search_term = "sand";
+            List<JitterUser> expected_users = new List<JitterUser>
+            {
+                new JitterUser { Handle = "adam1", FirstName = "Adam", LastName = "Sandler" },
+                new JitterUser { Handle = "rumbadancer2",FirstName = "Sandy", LastName = "Mathis"  },
+                new JitterUser { Handle = "treedancer", FirstName = "Richard", LastName = "Sandlehook" }
+            };
+
+            List<JitterUser> actual_users = repository.SearchByName(search_term);
+
+            //Assert
+            Assert.AreEqual(expected_users[0].Handle, actual_users[0].Handle);
+            Assert.AreEqual(expected_users[1].Handle, actual_users[1].Handle);
+            Assert.AreEqual(expected_users[2].Handle, actual_users[2].Handle);
+        }
+
+        [TestMethod]
+        public void JitterRepositoryEnsureICanGetAllJots()
+        {
+            //Arrange
+            DateTime base_time = DateTime.Now;
+            List<Jot> expected_jots = new List<Jot>
+            {
+                new Jot {Content = "Hello World", Date = base_time.AddSeconds(-30) },
+                new Jot {Content = "I'm Hungry", Date = base_time.AddMinutes(-5) },
+                new Jot {Content = "Sweet Potato Pies >>> Pumpkin Pies", Date = base_time.AddHours(-1) }
+            };
+            mock_jot_set.Object.AddRange(expected_jots);
+            ConnectMocksToDataStore(expected_jots);
+            //Act
+            List<Jot> actual_jots = repository.GetAllJots();
+            //expected_jots.Sort();
+            //
+            //Assert
+            Assert.AreEqual(expected_jots[0].Content, actual_jots[0].Content);
+            Assert.AreEqual(expected_jots[1].Content, actual_jots[1].Content);
+            Assert.AreEqual(expected_jots[2].Content, actual_jots[2].Content);
+            Assert.AreEqual("Hello World!", actual_jots[0].Content); //Just to check ourselves
+        }
+
+        [TestMethod]
+        public void JitterRepositoryEnsureICanCreateAJot()
+        {
+            //Arange
+            DateTime base_time = DateTime.Now;
+            List<Jot> expected_jots = new List<Jot>();
+            ConnectMocksToDataStore(expected_jots);
+            JitterUser jitter_user1 = new JitterUser { Handle = "popye1" };
+            //Act
+            bool successful = repository.CreateJot(jitter_user1);
+
+            //Assert
+            //Assert.AreEqual(1, repository)
+        }
+
     }
 }
